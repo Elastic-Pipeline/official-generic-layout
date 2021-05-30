@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { RouteManager, URI, URL } from "../../../API/internal/RouteManager";
-import { RouteType, ROUTE_FIRST } from "../../../API/Routing";
+import { RouteManager, URI, URL } from "../../../API/Routing/RouteManager";
+import { RouteType, ROUTE_FIRST } from "../../../API/Routing/Routing";
 
 //  Page Controller will allow developers to add elements, and sub-pages to a page. 
 export abstract class Page
@@ -16,7 +16,7 @@ export abstract class Page
         this.hide = _hide;
     }
 
-    public abstract RouteFunction(req: Request, res: Response, next: NextFunction) : Response;
+    public abstract RouteFunction(req: Request, res: Response, next: NextFunction) : void;
 
     public Init(_internal: PageControllerInternal) : void
     {

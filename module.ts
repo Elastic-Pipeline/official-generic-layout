@@ -1,4 +1,4 @@
-import { Module, ModuleManager } from "../../API/Module";
+import { Module, ModuleManager } from "../../API/Modules/Module";
 import fs from "fs";
 import path from "path";
 
