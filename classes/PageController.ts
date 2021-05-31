@@ -2,11 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { RouteManager, URI, URL } from "../../../API/Routing/RouteManager";
 import { RouteType, ROUTE_FIRST } from "../../../API/Routing/Routing";
 
-//  Page Controller will allow developers to add elements, and sub-pages to a page. 
+//  Page Controller will allow developers to add elements, and sub-pages to a page.
 export abstract class Page
 {
-    private uri: URI; 
-    private url: URL; 
+    private uri: URI;
+    private url: URL;
     protected hide: boolean = false;
     private subPages: Page[] = new Array();
     constructor(_url: URL, _uri: URI, _hide: boolean = false)
@@ -44,8 +44,8 @@ export abstract class Page
 export class PageControllerInternal
 {
     private pages: Page[] = new Array();
-    
-    public GetPages(): Page[] 
+
+    public GetPages(): Page[]
     {
         return this.pages;
     }
