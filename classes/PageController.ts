@@ -16,7 +16,7 @@ export abstract class Page
         this.hide = _hide;
     }
 
-    public abstract RouteFunction(req: Request, res: Response, next: NextFunction) : void;
+    public abstract RouteFunction(req: Request, res: Response, next: NextFunction) : Promise<void>;
 
     public Init(_internal: PageControllerInternal) : void
     {
