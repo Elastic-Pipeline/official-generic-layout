@@ -9,25 +9,41 @@ export abstract class Page
     private url: URL;
     protected hide: boolean = false;
     private subPages: Page[] = new Array();
-    constructor(_url: URL, _uri: URI, _hide: boolean = false)
+
+    private name: string;
+
+    constructor(_name: string, _url: URL, _uri: URI, _hide: boolean = false)
     {
+        this.name = _name;
         this.url = _url.startsWith('/') ? _url : '/' + _url;
         this.uri = _uri;
         this.hide = _hide;
     }
 
-    public abstract RouteFunction(req: Request, res: Response, next: NextFunction) : Promise<void>;
+    public abstract RouteFunction(req: Request, res: Response, next: NextFunction) : Promise<any>;
 
     public Init(_internal: PageControllerInternal) : void
     {
         // Setup the route.
-        RouteManager.AddRoute(RouteType.GET, this.url, this.uri, this.RouteFunction, ROUTE_FIRST, true);
+        RouteManager.AddRoute(RouteType.GET, this.url, this.GetURI(), this.RouteFunction, ROUTE_FIRST);
 
         // Tell Internal Page to add this page.
-        for (let index = 0; index < this.subPages.length; index++) {
+        for (let index = 0; index < this.subPages.length; index++)
+        {
             const page = this.subPages[index];
+            page.uri = this.uri + "/" + page.uri;
             _internal.RegisterPage(page);
         }
+    }
+
+    public GetName() : string
+    {
+        return this.name;
+    }
+
+    public GetURI() : string
+    {
+        return "pages/" + this.uri;
     }
 
     public GetHidden() : boolean
@@ -35,9 +51,17 @@ export abstract class Page
         return this.hide;
     }
 
-    protected AddSubPage(_page: Page) : void
+    public GetSubPages() : Page[]
     {
-        this.subPages.push(_page);
+        return this.subPages;
+    }
+
+    public AddSubPage(_page: Page, _insert: number = -1) : void
+    {
+        if (_insert == -1)
+            this.subPages.push(_page);
+        else
+            this.subPages.splice(_insert, 0, _page);
     }
 }
 
@@ -52,9 +76,17 @@ export class PageControllerInternal
     // When a Page is registered, it is treated like the root here.
     //  Root doesn't necessary become `/`
     //  Root is located where generic page home page is located.
-    public RegisterPage(_page: Page)
+    public RegisterPage(_page: Page, _insert: number = -1)
     {
-        this.pages.push(_page);
+        if (_insert == -1)
+        {
+            this.pages.push(_page);
+        }
+        else
+        {
+            // Insert.
+            this.pages.splice(_insert, 0, _page);
+        }
         _page.Init(this);
     }
 }
@@ -71,8 +103,8 @@ export class PageController
     // When a Page is registered, it is treated like the root here.
     //  Root doesn't necessary become `/`
     //  Root is located where generic page home page is located.
-    public static RegisterPage(_page: Page)
+    public static RegisterPage(_page: Page, _insert: number = -1)
     {
-        this.internal.RegisterPage(_page);
+        this.internal.RegisterPage(_page, _insert);
     }
 }

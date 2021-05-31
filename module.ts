@@ -8,7 +8,6 @@ class BaseModule extends Module
     {
         super("Official Generic Layout", fs.readFileSync(path.resolve(__dirname, "./version.txt")).toString("utf-8"));
         this.RegisterAssetFolder(__dirname + '/assets');
-
     }
 }
 
