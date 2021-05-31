@@ -9,10 +9,10 @@ export abstract class Page
     private url: URL; 
     protected hide: boolean = false;
     private subPages: Page[] = new Array();
-    constructor(_uri: URI, _url: URL, _hide: boolean = false)
+    constructor(_url: URL, _uri: URI, _hide: boolean = false)
     {
+        this.url = _url.startsWith('/') ? _url : '/' + _url;
         this.uri = _uri;
-        this.url = _url;
         this.hide = _hide;
     }
 
@@ -21,7 +21,7 @@ export abstract class Page
     public Init(_internal: PageControllerInternal) : void
     {
         // Setup the route.
-        RouteManager.AddRoute(RouteType.GET, '/' + this.url, this.uri, this.RouteFunction, ROUTE_FIRST, true);
+        RouteManager.AddRoute(RouteType.GET, this.url, this.uri, this.RouteFunction, ROUTE_FIRST, true);
 
         // Tell Internal Page to add this page.
         for (let index = 0; index < this.subPages.length; index++) {
