@@ -8,7 +8,7 @@ export abstract class Page
     private uri: URI;
     private url: URL;
     protected hide: boolean = false;
-    private subPages: Page[] = new Array();
+    protected subPages: Page[] = new Array();
 
     private name: string;
 
