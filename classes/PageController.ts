@@ -7,33 +7,46 @@ export abstract class Page
 {
     private uri: URI;
     private url: URL;
+    protected icon: string|undefined;
     protected hide: boolean = false;
+    protected routing: boolean = true;
     protected subPages: Page[] = new Array();
 
     private name: string;
 
-    constructor(_name: string, _url: URL, _uri: URI, _hide: boolean = false)
+    constructor(_name: string, _url: URL, _uri: URI, _hide: boolean = false, _routing: boolean = true)
     {
         this.name = _name;
-        this.url = _url.startsWith('/') ? _url : '/' + _url;
+        this.url = _url.startsWith('/') ? _url.substr(0) : _url;
         this.uri = _uri;
         this.hide = _hide;
+        this.routing = this.routing;
     }
 
-    public abstract RouteFunction(req: Request, res: Response, next: NextFunction) : Promise<any>;
+    public RouteFunction(req: Request, res: Response, next: NextFunction) : Promise<any> {
+        return new Promise<void>(
+            (resolve, reject) => {
+                if (this.routing)
+                    reject("Route Function isn't setup for " + this.constructor.name);
+            }
+        );
+    }
+
 
     public Init(_internal: PageControllerInternal) : void
     {
+        if (!this.routing)
+            return;
+
         // Setup the route.
         RouteManager.AddRoute(RouteType.GET, this.url, this.GetURI(), this.RouteFunction, ROUTE_FIRST);
+    }
 
-        // Tell Internal Page to add this page.
-        for (let index = 0; index < this.subPages.length; index++)
-        {
-            const page = this.subPages[index];
-            page.uri = this.uri + "/" + page.uri;
-            _internal.RegisterPage(page);
-        }
+    public GetIcon() : string
+    {
+        if (this.icon == undefined)
+            return '';
+        return `<i class='${this.icon}' aria-hidden='true'></i>`;
     }
 
     public GetName() : string
@@ -62,6 +75,13 @@ export abstract class Page
             this.subPages.push(_page);
         else
             this.subPages.splice(_insert, 0, _page);
+
+        console.log(this.GetName(), "<-", _page.GetName());
+
+        _page.url = this.url + '/' + _page.url;
+        _page.uri = this.uri + '/' + _page.uri;
+
+        PageController.RegisterPage(_page, _insert);
     }
 }
 
